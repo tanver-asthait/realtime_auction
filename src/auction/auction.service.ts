@@ -34,7 +34,7 @@ export class AuctionService {
    * Rules:
    * - Player must be in PENDING status
    * - Set initial bid to basePrice (1)
-   * - Start 20 second timer
+   * - Start 60 second timer (1 minute)
    */
   async startAuction(playerId: string): Promise<AuctionStateDocument> {
     // Check if auction is already running
@@ -65,7 +65,7 @@ export class AuctionService {
     auctionState.currentPlayerId = playerId;
     auctionState.highestBid = player.basePrice || 1; // Default to 1
     auctionState.highestBidTeamId = null;
-    auctionState.timer = 20; // 20 seconds as per rules
+    auctionState.timer = 60; // 60 seconds (1 minute) as per rules
     auctionState.isRunning = true;
 
     const savedState = await auctionState.save();
@@ -79,7 +79,7 @@ export class AuctionService {
       this.gateway.broadcastAuctionStarted({
         player: formattedState.currentPlayer,
         basePrice: player.basePrice || 1,
-        timer: 20,
+        timer: 60,
       });
       this.gateway.broadcastStateUpdate(formattedState);
     }
@@ -164,7 +164,7 @@ export class AuctionService {
    * Rules:
    * - Must pass validation
    * - Increment is always +1
-   * - Timer resets to 20 seconds
+   * - Timer resets to 60 seconds (1 minute)
    */
   async placeBid(
     teamId: string,
@@ -187,7 +187,7 @@ export class AuctionService {
     // Update auction state
     auctionState.highestBid = bidAmount;
     auctionState.highestBidTeamId = teamId;
-    auctionState.timer = 20; // Reset timer to 20 seconds
+    auctionState.timer = 60; // Reset timer to 60 seconds (1 minute)
 
     const savedState = await auctionState.save();
 

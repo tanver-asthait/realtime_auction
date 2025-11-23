@@ -13,6 +13,7 @@ import { Logger } from '@nestjs/common';
 import { AuctionService } from './auction.service';
 
 interface BidPayload {
+  playerId: string;
   teamId: string;
   bidAmount: number;
 }
@@ -31,8 +32,13 @@ interface SellPlayerPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: [
+      'http://localhost:4200', // Angular dev server
+      'http://localhost:3000', // Alternative frontend
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
     credentials: true,
+    methods: ['GET', 'POST'],
   },
 })
 export class AuctionGateway
@@ -65,7 +71,7 @@ export class AuctionGateway
 
   /**
    * Handle bid event from teams
-   * Payload: { teamId, bidAmount }
+   * Payload: { playerId, teamId, bidAmount }
    */
   @SubscribeMessage('bid')
   async handleBid(
@@ -77,16 +83,17 @@ export class AuctionGateway
     );
 
     try {
-      // Get current player
-      const currentPlayer = await this.auctionService.getCurrentPlayer();
-      if (!currentPlayer) {
-        throw new Error('No player currently in auction');
+      // Validate payload
+      if (!payload.playerId || !payload.teamId || !payload.bidAmount) {
+        throw new Error(
+          'Missing required fields: playerId, teamId, or bidAmount',
+        );
       }
 
-      // Place bid through service
+      // Place bid through service using playerId from payload
       await this.auctionService.placeBid(
         payload.teamId,
-        currentPlayer._id,
+        payload.playerId,
         payload.bidAmount,
       );
 
@@ -94,6 +101,7 @@ export class AuctionGateway
         event: 'bidAcknowledged',
         data: {
           success: true,
+          playerId: payload.playerId,
           teamId: payload.teamId,
           bidAmount: payload.bidAmount,
         },
