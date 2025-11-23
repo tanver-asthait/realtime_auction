@@ -1,8 +1,8 @@
 /**
  * Socket.IO Test Client
- * 
+ *
  * Usage: node test-socket-client.js
- * 
+ *
  * Make sure the server is running: npm run start:dev
  */
 
@@ -11,7 +11,7 @@ const io = require('socket.io-client');
 // Connect to the server
 const socket = io('http://localhost:3001', {
   withCredentials: true,
-  transports: ['websocket', 'polling']
+  transports: ['websocket', 'polling'],
 });
 
 console.log('🔌 Attempting to connect to WebSocket server...\n');
@@ -20,7 +20,7 @@ console.log('🔌 Attempting to connect to WebSocket server...\n');
 socket.on('connect', () => {
   console.log('✅ Connected to server!');
   console.log(`📡 Socket ID: ${socket.id}\n`);
-  
+
   // Wait for initial state
   setTimeout(() => {
     runTests();
@@ -86,38 +86,38 @@ socket.on('bidError', (data) => {
 // Test functions
 function runTests() {
   console.log('🧪 Running test scenarios...\n');
-  
+
   // Test 1: Place a bid (will likely fail - no active auction)
   console.log('Test 1: Attempting to place a bid...');
   socket.emit('bid', {
     teamId: 'test-team-123',
-    bidAmount: 150
+    bidAmount: 150,
   });
-  
+
   // Test 2: Try to start auction (admin event)
   setTimeout(() => {
     console.log('\nTest 2: Attempting to start auction...');
     socket.emit('startAuction', {
-      playerId: 'test-player-456'
+      playerId: 'test-player-456',
     });
   }, 2000);
-  
+
   // Test 3: Try to sell player (admin event)
   setTimeout(() => {
     console.log('\nTest 3: Attempting to sell player...');
     socket.emit('sellPlayer', {
-      playerId: 'test-player-456'
+      playerId: 'test-player-456',
     });
   }, 4000);
-  
+
   // Test 4: Try next player (admin event)
   setTimeout(() => {
     console.log('\nTest 4: Attempting to move to next player...');
     socket.emit('nextPlayer', {
-      playerId: 'test-player-789'
+      playerId: 'test-player-789',
     });
   }, 6000);
-  
+
   // Disconnect after tests
   setTimeout(() => {
     console.log('\n✅ Tests complete. Disconnecting...');

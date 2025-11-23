@@ -1,9 +1,11 @@
 # WebSocket Gateway Documentation
 
 ## Overview
+
 This document describes the WebSocket events for the real-time football auction system using Socket.IO.
 
 ## Connection
+
 - **URL**: `http://localhost:3001` (or your configured server URL)
 - **CORS**: Enabled for frontend origin (default: `http://localhost:3000`)
 
@@ -12,19 +14,22 @@ This document describes the WebSocket events for the real-time football auction 
 ## Client → Server Events
 
 ### 1. **bid**
+
 Teams place bids during an active auction.
 
 **Event Name**: `bid`
 
 **Payload**:
+
 ```typescript
 {
-  teamId: string;      // ID of the bidding team
-  bidAmount: number;   // Bid amount (must be higher than current highest)
+  teamId: string; // ID of the bidding team
+  bidAmount: number; // Bid amount (must be higher than current highest)
 }
 ```
 
 **Response**:
+
 ```typescript
 // Success
 {
@@ -47,28 +52,32 @@ Teams place bids during an active auction.
 ```
 
 **Example (JavaScript)**:
+
 ```javascript
 socket.emit('bid', {
   teamId: '507f1f77bcf86cd799439011',
-  bidAmount: 150
+  bidAmount: 150,
 });
 ```
 
 ---
 
 ### 2. **startAuction** (Admin)
+
 Admin starts an auction for a specific player.
 
 **Event Name**: `startAuction`
 
 **Payload**:
+
 ```typescript
 {
-  playerId: string;    // ID of the player to auction
+  playerId: string; // ID of the player to auction
 }
 ```
 
 **Response**:
+
 ```typescript
 // Success
 {
@@ -90,27 +99,31 @@ Admin starts an auction for a specific player.
 ```
 
 **Example**:
+
 ```javascript
 socket.emit('startAuction', {
-  playerId: '507f1f77bcf86cd799439012'
+  playerId: '507f1f77bcf86cd799439012',
 });
 ```
 
 ---
 
 ### 3. **nextPlayer** (Admin)
+
 Admin moves to the next player.
 
 **Event Name**: `nextPlayer`
 
 **Payload**:
+
 ```typescript
 {
-  playerId: string;    // ID of the next player
+  playerId: string; // ID of the next player
 }
 ```
 
 **Response**:
+
 ```typescript
 // Success
 {
@@ -132,27 +145,31 @@ Admin moves to the next player.
 ```
 
 **Example**:
+
 ```javascript
 socket.emit('nextPlayer', {
-  playerId: '507f1f77bcf86cd799439013'
+  playerId: '507f1f77bcf86cd799439013',
 });
 ```
 
 ---
 
 ### 4. **sellPlayer** (Admin)
+
 Admin ends the auction and sells the player to the highest bidder.
 
 **Event Name**: `sellPlayer`
 
 **Payload**:
+
 ```typescript
 {
-  playerId: string;    // ID of the player to sell
+  playerId: string; // ID of the player to sell
 }
 ```
 
 **Response**:
+
 ```typescript
 // Success
 {
@@ -174,9 +191,10 @@ Admin ends the auction and sells the player to the highest bidder.
 ```
 
 **Example**:
+
 ```javascript
 socket.emit('sellPlayer', {
-  playerId: '507f1f77bcf86cd799439012'
+  playerId: '507f1f77bcf86cd799439012',
 });
 ```
 
@@ -185,11 +203,13 @@ socket.emit('sellPlayer', {
 ## Server → Client Events (Broadcasts)
 
 ### 1. **stateUpdate**
+
 Server broadcasts the complete auction state to all clients.
 
 **Event Name**: `stateUpdate`
 
 **Payload**:
+
 ```typescript
 {
   currentPlayer: {
@@ -214,6 +234,7 @@ Server broadcasts the complete auction state to all clients.
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('stateUpdate', (state) => {
   console.log('Auction state updated:', state);
@@ -224,11 +245,13 @@ socket.on('stateUpdate', (state) => {
 ---
 
 ### 2. **timerUpdate**
+
 Server broadcasts timer updates (useful for countdown).
 
 **Event Name**: `timerUpdate`
 
 **Payload**:
+
 ```typescript
 {
   timer: number,       // Remaining seconds
@@ -237,6 +260,7 @@ Server broadcasts timer updates (useful for countdown).
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('timerUpdate', (data) => {
   console.log(`Timer: ${data.timer}s, Running: ${data.isRunning}`);
@@ -247,11 +271,13 @@ socket.on('timerUpdate', (data) => {
 ---
 
 ### 3. **auctionStarted**
+
 Broadcast when a new auction starts.
 
 **Event Name**: `auctionStarted`
 
 **Payload**:
+
 ```typescript
 {
   playerId: string,
@@ -262,6 +288,7 @@ Broadcast when a new auction starts.
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('auctionStarted', (data) => {
   console.log(`Auction started for ${data.playerName}`);
@@ -272,11 +299,13 @@ socket.on('auctionStarted', (data) => {
 ---
 
 ### 4. **bidPlaced**
+
 Broadcast when a new bid is placed.
 
 **Event Name**: `bidPlaced`
 
 **Payload**:
+
 ```typescript
 {
   teamId: string,
@@ -288,6 +317,7 @@ Broadcast when a new bid is placed.
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('bidPlaced', (data) => {
   console.log(`${data.teamName} bid ${data.bidAmount}`);
@@ -298,11 +328,13 @@ socket.on('bidPlaced', (data) => {
 ---
 
 ### 5. **playerSold**
+
 Broadcast when a player is sold.
 
 **Event Name**: `playerSold`
 
 **Payload**:
+
 ```typescript
 {
   playerId: string,
@@ -315,9 +347,12 @@ Broadcast when a player is sold.
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('playerSold', (data) => {
-  console.log(`${data.playerName} sold to ${data.teamName} for ${data.finalPrice}`);
+  console.log(
+    `${data.playerName} sold to ${data.teamName} for ${data.finalPrice}`,
+  );
   // Show sold animation
 });
 ```
@@ -325,11 +360,13 @@ socket.on('playerSold', (data) => {
 ---
 
 ### 6. **auctionEnded**
+
 Broadcast when auction ends (no bids or timeout).
 
 **Event Name**: `auctionEnded`
 
 **Payload**:
+
 ```typescript
 {
   playerId: string,
@@ -339,6 +376,7 @@ Broadcast when auction ends (no bids or timeout).
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('auctionEnded', (data) => {
   console.log(`Auction ended: ${data.reason}`);
@@ -349,11 +387,13 @@ socket.on('auctionEnded', (data) => {
 ---
 
 ### 7. **auctionError**
+
 Broadcast when an error occurs.
 
 **Event Name**: `auctionError`
 
 **Payload**:
+
 ```typescript
 {
   message: string,
@@ -362,6 +402,7 @@ Broadcast when an error occurs.
 ```
 
 **Listen Example**:
+
 ```javascript
 socket.on('auctionError', (error) => {
   console.error('Auction error:', error.message);
@@ -374,7 +415,9 @@ socket.on('auctionError', (error) => {
 ## Connection Lifecycle
 
 ### On Connect
+
 When a client connects, the server automatically sends the current auction state:
+
 ```javascript
 socket.on('connect', () => {
   console.log('Connected to auction server');
@@ -383,6 +426,7 @@ socket.on('connect', () => {
 ```
 
 ### On Disconnect
+
 ```javascript
 socket.on('disconnect', () => {
   console.log('Disconnected from auction server');
@@ -397,7 +441,7 @@ socket.on('disconnect', () => {
 import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:3001', {
-  withCredentials: true
+  withCredentials: true,
 });
 
 // Listen to broadcasts
@@ -425,7 +469,7 @@ socket.on('auctionError', (error) => {
 function placeBid(teamId, amount) {
   socket.emit('bid', {
     teamId: teamId,
-    bidAmount: amount
+    bidAmount: amount,
   });
 }
 
@@ -460,8 +504,8 @@ CLIENT (Team)                    SERVER                    ALL CLIENTS
      |                              |--- broadcastStateUpdate -->|
      |                              |--- broadcastTimerUpdate -->|
      |                              |                            |
-     
-     
+
+
 CLIENT (Admin)                   SERVER                    ALL CLIENTS
      |                              |                            |
      |-- startAuction (playerId) -->|                            |
@@ -511,11 +555,11 @@ const socket = io('http://localhost:3001');
 
 socket.on('connect', () => {
   console.log('Connected!');
-  
+
   // Test bid
   socket.emit('bid', {
     teamId: 'test-team-id',
-    bidAmount: 100
+    bidAmount: 100,
   });
 });
 

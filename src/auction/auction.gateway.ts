@@ -135,7 +135,10 @@ export class AuctionGateway
       };
     } catch (error) {
       this.logger.error(`Error starting auction: ${error.message}`);
-      this.broadcastError({ message: error.message, code: 'START_AUCTION_ERROR' });
+      this.broadcastError({
+        message: error.message,
+        code: 'START_AUCTION_ERROR',
+      });
       return {
         event: 'auctionStartError',
         data: {
@@ -169,7 +172,10 @@ export class AuctionGateway
       };
     } catch (error) {
       this.logger.error(`Error setting next player: ${error.message}`);
-      this.broadcastError({ message: error.message, code: 'NEXT_PLAYER_ERROR' });
+      this.broadcastError({
+        message: error.message,
+        code: 'NEXT_PLAYER_ERROR',
+      });
       return {
         event: 'nextPlayerError',
         data: {
@@ -203,7 +209,10 @@ export class AuctionGateway
       };
     } catch (error) {
       this.logger.error(`Error selling player: ${error.message}`);
-      this.broadcastError({ message: error.message, code: 'SELL_PLAYER_ERROR' });
+      this.broadcastError({
+        message: error.message,
+        code: 'SELL_PLAYER_ERROR',
+      });
       return {
         event: 'sellPlayerError',
         data: {

@@ -99,24 +99,24 @@ npm run start:prod
 
 ### Client → Server Events
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `bid` | `{ teamId, bidAmount }` | Team places a bid |
-| `startAuction` | `{ playerId }` | Admin starts auction |
-| `nextPlayer` | `{ playerId }` | Admin moves to next player |
-| `sellPlayer` | `{ playerId }` | Admin sells current player |
+| Event          | Payload                 | Description                |
+| -------------- | ----------------------- | -------------------------- |
+| `bid`          | `{ teamId, bidAmount }` | Team places a bid          |
+| `startAuction` | `{ playerId }`          | Admin starts auction       |
+| `nextPlayer`   | `{ playerId }`          | Admin moves to next player |
+| `sellPlayer`   | `{ playerId }`          | Admin sells current player |
 
 ### Server → Client Events (Broadcasts)
 
-| Event | Description |
-|-------|-------------|
-| `stateUpdate` | Complete auction state update |
-| `timerUpdate` | Timer countdown update |
-| `auctionStarted` | Auction started notification |
-| `bidPlaced` | New bid placed notification |
-| `playerSold` | Player sold notification |
-| `auctionEnded` | Auction ended notification |
-| `auctionError` | Error notification |
+| Event            | Description                   |
+| ---------------- | ----------------------------- |
+| `stateUpdate`    | Complete auction state update |
+| `timerUpdate`    | Timer countdown update        |
+| `auctionStarted` | Auction started notification  |
+| `bidPlaced`      | New bid placed notification   |
+| `playerSold`     | Player sold notification      |
+| `auctionEnded`   | Auction ended notification    |
+| `auctionError`   | Error notification            |
 
 **See [WEBSOCKET.md](./WEBSOCKET.md) for complete WebSocket documentation**
 
@@ -149,6 +149,7 @@ node test-socket-client.js
 ## Implementation Status
 
 ✅ **Completed:**
+
 - Player, Team, and Auction schemas
 - All DTOs with validation
 - CRUD services and controllers
@@ -157,6 +158,7 @@ node test-socket-client.js
 - Helper methods for gateway integration
 
 ⏳ **Pending:**
+
 - Business logic implementation in event handlers
 - Timer countdown mechanism
 - Authentication/authorization

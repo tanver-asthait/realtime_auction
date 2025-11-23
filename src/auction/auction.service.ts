@@ -451,4 +451,3 @@ export class AuctionService {
     return null;
   }
 }
-

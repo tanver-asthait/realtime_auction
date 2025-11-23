@@ -41,6 +41,7 @@
 **Purpose**: Start auction for a specific player
 
 **Rules Applied**:
+
 - ✅ Check if another auction is already running
 - ✅ Validate player is in PENDING status
 - ✅ Set player status to AUCTIONING
@@ -49,6 +50,7 @@
 - ✅ Broadcast auction started event
 
 **Example**:
+
 ```typescript
 await auctionService.startAuction('player-id-123');
 // Player now in auction, timer started at 20s
@@ -61,12 +63,14 @@ await auctionService.startAuction('player-id-123');
 **Purpose**: Validate if a bid can be placed
 
 **Validation Rules**:
+
 - ✅ Auction must be running
 - ✅ Player must be in AUCTIONING status
 - ✅ Bid must be exactly `currentHighestBid + 1` (increment rule)
 - ✅ Team budget must be >= bidAmount
 
 **Returns**:
+
 ```typescript
 {
   valid: boolean;
@@ -75,6 +79,7 @@ await auctionService.startAuction('player-id-123');
 ```
 
 **Example**:
+
 ```typescript
 // Current highest bid = 5
 const validation = await auctionService.validateBid('team-id', 6); // Valid
@@ -89,6 +94,7 @@ const validation3 = await auctionService.validateBid('team-id', 5); // Invalid (
 **Purpose**: Place a bid on the current player
 
 **Process**:
+
 1. ✅ Validate bid (calls `validateBid()`)
 2. ✅ Update highest bid and team
 3. ✅ Reset timer to 20 seconds
@@ -96,6 +102,7 @@ const validation3 = await auctionService.validateBid('team-id', 5); // Invalid (
 5. ✅ Broadcast state update
 
 **Example**:
+
 ```typescript
 await auctionService.placeBid('team-id', 'player-id', 6);
 // Bid placed, timer reset to 20s
@@ -108,6 +115,7 @@ await auctionService.placeBid('team-id', 'player-id', 6);
 **Purpose**: Start countdown timer mechanism
 
 **Behavior**:
+
 - ✅ Counts down from current timer value to 0
 - ✅ Updates every 1 second
 - ✅ Broadcasts timer update each second
@@ -115,6 +123,7 @@ await auctionService.placeBid('team-id', 'player-id', 6);
 - ✅ Stops if auction is no longer running
 
 **Auto-execution**:
+
 ```
 Timer: 20 → 19 → 18 → ... → 1 → 0 → Auto Sell Player
 ```
@@ -126,6 +135,7 @@ Timer: 20 → 19 → 18 → ... → 1 → 0 → Auto Sell Player
 **Purpose**: End auction and sell player to highest bidder
 
 **Process**:
+
 1. ✅ Stop timer
 2. ✅ Check if there's a winning bid
 3. ✅ If bid exists:
@@ -139,6 +149,7 @@ Timer: 20 → 19 → 18 → ... → 1 → 0 → Auto Sell Player
 6. ✅ Broadcast auction ended event
 
 **Example**:
+
 ```typescript
 const result = await auctionService.sellPlayer('player-id');
 // Result:
@@ -160,10 +171,12 @@ const result = await auctionService.sellPlayer('player-id');
 **Purpose**: Move to next player (admin function)
 
 **Process**:
+
 1. ✅ If auction is running → sell current player first
 2. ✅ Start auction for next player
 
 **Example**:
+
 ```typescript
 await auctionService.nextPlayer('next-player-id');
 // Previous auction ended, new auction started
@@ -246,30 +259,30 @@ await auctionService.nextPlayer('next-player-id');
 
 ```typescript
 // Current highest: 1
-placeBid(teamId, playerId, 2)  // ✅ Valid (1 + 1 = 2)
+placeBid(teamId, playerId, 2); // ✅ Valid (1 + 1 = 2)
 
 // Current highest: 5
-placeBid(teamId, playerId, 6)  // ✅ Valid (5 + 1 = 6)
+placeBid(teamId, playerId, 6); // ✅ Valid (5 + 1 = 6)
 
 // Current highest: 99, Team budget: 100
-placeBid(teamId, playerId, 100) // ✅ Valid (within budget)
+placeBid(teamId, playerId, 100); // ✅ Valid (within budget)
 ```
 
 ### Invalid Bids ❌
 
 ```typescript
 // Current highest: 1
-placeBid(teamId, playerId, 3)  // ❌ Invalid (must be 2, not 3)
-placeBid(teamId, playerId, 1)  // ❌ Invalid (must be higher)
+placeBid(teamId, playerId, 3); // ❌ Invalid (must be 2, not 3)
+placeBid(teamId, playerId, 1); // ❌ Invalid (must be higher)
 
 // Current highest: 5
-placeBid(teamId, playerId, 7)  // ❌ Invalid (must be 6, not 7)
+placeBid(teamId, playerId, 7); // ❌ Invalid (must be 6, not 7)
 
 // Team budget: 50, Current highest: 50
-placeBid(teamId, playerId, 51) // ❌ Invalid (insufficient budget)
+placeBid(teamId, playerId, 51); // ❌ Invalid (insufficient budget)
 
 // Auction not running
-placeBid(teamId, playerId, 2)  // ❌ Invalid (no active auction)
+placeBid(teamId, playerId, 2); // ❌ Invalid (no active auction)
 ```
 
 ---
@@ -281,6 +294,7 @@ placeBid(teamId, playerId, 2)  // ❌ Invalid (no active auction)
 **Client → Gateway → Service**
 
 1. **Start Auction**
+
 ```
 Client: emit('startAuction', { playerId })
   ↓
@@ -292,6 +306,7 @@ Broadcast: auctionStarted, stateUpdate
 ```
 
 2. **Place Bid**
+
 ```
 Client: emit('bid', { teamId, bidAmount })
   ↓
@@ -303,6 +318,7 @@ Broadcast: bidPlaced, stateUpdate, timerUpdate
 ```
 
 3. **Auto Sell (Timer = 0)**
+
 ```
 Timer: 0
   ↓
@@ -342,6 +358,7 @@ IDLE → START_AUCTION → RUNNING → TIMER_0 → NO_BIDS → IDLE
 ## 🧪 Testing Scenarios
 
 ### Scenario 1: Normal Auction
+
 ```bash
 1. Create 4 teams (budget: 100 each)
 2. Create 1 player (basePrice: 1)
@@ -354,6 +371,7 @@ IDLE → START_AUCTION → RUNNING → TIMER_0 → NO_BIDS → IDLE
 ```
 
 ### Scenario 2: No Bids
+
 ```bash
 1. Start auction → player-1
 2. Wait for timer to hit 0
@@ -361,6 +379,7 @@ IDLE → START_AUCTION → RUNNING → TIMER_0 → NO_BIDS → IDLE
 ```
 
 ### Scenario 3: Budget Limit
+
 ```bash
 1. Team A budget: 10
 2. Current bid: 9
@@ -369,6 +388,7 @@ IDLE → START_AUCTION → RUNNING → TIMER_0 → NO_BIDS → IDLE
 ```
 
 ### Scenario 4: Bid Increment
+
 ```bash
 1. Current bid: 5
 2. Team A bids 7 → ❌ Fail (must be 6)
@@ -406,16 +426,19 @@ socket.on('playerSold', (data) => {
 ## ⚙️ Configuration
 
 ### Timer Settings
+
 - Default: 20 seconds
 - Resets on each bid
 - Updates broadcast: Every 1 second
 
 ### Bid Rules
+
 - Increment: Exactly +1
 - Validation: Real-time
 - Budget check: Before bid placement
 
 ### State Persistence
+
 - MongoDB: AuctionState collection
 - Real-time: In-memory timer
 - Broadcasts: WebSocket (Socket.IO)
