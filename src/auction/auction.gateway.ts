@@ -11,6 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { AuctionService } from './auction.service';
+import { PlayersService } from '../players/players.service';
 
 interface BidPayload {
   playerId: string;
@@ -23,11 +24,11 @@ interface StartAuctionPayload {
 }
 
 interface NextPlayerPayload {
-  playerId: string;
+  playerId?: string;
 }
 
 interface SellPlayerPayload {
-  playerId: string;
+  playerId?: string;
 }
 
 @WebSocketGateway({
@@ -49,7 +50,10 @@ export class AuctionGateway
 
   private logger: Logger = new Logger('AuctionGateway');
 
-  constructor(private readonly auctionService: AuctionService) {}
+  constructor(
+    private readonly auctionService: AuctionService,
+    private readonly playersService: PlayersService,
+  ) {}
 
   afterInit(server: Server) {
     this.logger.log('WebSocket Gateway Initialized');
@@ -159,7 +163,7 @@ export class AuctionGateway
 
   /**
    * Admin event: Move to next player
-   * Payload: { playerId }
+   * Payload: { playerId? } - optional, will auto-select next unsold player if not provided
    */
   @SubscribeMessage('nextPlayer')
   async handleNextPlayer(
@@ -169,13 +173,29 @@ export class AuctionGateway
     this.logger.log(`Next player request: ${JSON.stringify(payload)}`);
 
     try {
-      await this.auctionService.nextPlayer(payload.playerId);
+      let playerId = payload?.playerId;
+
+      // If no playerId provided, get the next unsold player
+      if (!playerId) {
+        const nextUnsoldPlayer = await this.playersService.findNextUnsold();
+
+        if (!nextUnsoldPlayer) {
+          throw new Error('No more unsold players available');
+        }
+
+        playerId = nextUnsoldPlayer._id.toString();
+        this.logger.log(
+          `Auto-selected next unsold player: ${nextUnsoldPlayer.name} (${playerId})`,
+        );
+      }
+
+      await this.auctionService.nextPlayer(playerId);
 
       return {
         event: 'nextPlayerSet',
         data: {
           success: true,
-          playerId: payload.playerId,
+          playerId: playerId,
         },
       };
     } catch (error) {
@@ -196,7 +216,7 @@ export class AuctionGateway
 
   /**
    * Admin event: Sell player (end auction and assign to highest bidder)
-   * Payload: { playerId }
+   * Payload: { playerId? } - playerId is optional, will use current player if not provided
    */
   @SubscribeMessage('sellPlayer')
   async handleSellPlayer(
@@ -206,7 +226,21 @@ export class AuctionGateway
     this.logger.log(`Sell player request: ${JSON.stringify(payload)}`);
 
     try {
-      const result = await this.auctionService.sellPlayer(payload.playerId);
+      // If no playerId provided, get it from current auction state
+      let playerId = payload?.playerId;
+
+      if (!playerId) {
+        const currentState = await this.auctionService.getAuctionStatus();
+        playerId = currentState.currentPlayerId;
+
+        if (!playerId) {
+          throw new Error('No player currently in auction');
+        }
+
+        this.logger.log(`Using current player ID: ${playerId}`);
+      }
+
+      const result = await this.auctionService.sellPlayer(playerId);
 
       return {
         event: 'playerSold',

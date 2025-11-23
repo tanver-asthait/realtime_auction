@@ -49,6 +49,11 @@ export class PlayersService {
     return this.playerModel.find({ status }).exec();
   }
 
+  async findNextUnsold(): Promise<PlayerDocument | null> {
+    // Find the first player with status PENDING (unsold)
+    return this.playerModel.findOne({ status: PlayerStatus.PENDING }).exec();
+  }
+
   async assignToTeam(
     playerId: string,
     teamId: string,
