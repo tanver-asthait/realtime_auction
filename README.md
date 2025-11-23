@@ -93,13 +93,42 @@ npm run start:prod
 - `POST /auction/bid` - Place a bid
 - `POST /auction/end/:playerId` - End auction
 - `GET /auction/status` - Get current auction status
+- `POST /auction/reset` - Reset auction
 
-## WebSocket Events (To be implemented)
+## WebSocket Events
 
-- `auctionStart` - Auction started for a player
-- `placeBid` - New bid placed
-- `auctionEnd` - Auction ended
-- `auctionUpdate` - General auction updates
+### Client → Server Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `bid` | `{ teamId, bidAmount }` | Team places a bid |
+| `startAuction` | `{ playerId }` | Admin starts auction |
+| `nextPlayer` | `{ playerId }` | Admin moves to next player |
+| `sellPlayer` | `{ playerId }` | Admin sells current player |
+
+### Server → Client Events (Broadcasts)
+
+| Event | Description |
+|-------|-------------|
+| `stateUpdate` | Complete auction state update |
+| `timerUpdate` | Timer countdown update |
+| `auctionStarted` | Auction started notification |
+| `bidPlaced` | New bid placed notification |
+| `playerSold` | Player sold notification |
+| `auctionEnded` | Auction ended notification |
+| `auctionError` | Error notification |
+
+**See [WEBSOCKET.md](./WEBSOCKET.md) for complete WebSocket documentation**
+
+## Testing WebSocket
+
+```bash
+# Start the server
+npm run start:dev
+
+# In another terminal, run the test client
+node test-socket-client.js
+```
 
 ## Tech Stack
 
@@ -108,16 +137,31 @@ npm run start:prod
 - **Mongoose** - ODM for MongoDB
 - **Socket.IO** - WebSocket library
 - **TypeScript** - Type-safe JavaScript
+- **class-validator** - DTO validation
+- **class-transformer** - DTO transformation
 
-## Next Steps
+## Documentation
 
-1. Implement service methods in each module
-2. Create DTOs for request/response validation
-3. Add authentication/authorization
-4. Implement auction business logic
-5. Add WebSocket event handlers
-6. Create seed data for testing
-7. Add unit and e2e tests
+- [SCHEMAS.md](./SCHEMAS.md) - Complete schema & DTO documentation
+- [WEBSOCKET.md](./WEBSOCKET.md) - WebSocket events documentation
+- [WEBSOCKET-QUICK.md](./WEBSOCKET-QUICK.md) - Quick reference guide
+
+## Implementation Status
+
+✅ **Completed:**
+- Player, Team, and Auction schemas
+- All DTOs with validation
+- CRUD services and controllers
+- WebSocket gateway with event handlers
+- Auction state management
+- Helper methods for gateway integration
+
+⏳ **Pending:**
+- Business logic implementation in event handlers
+- Timer countdown mechanism
+- Authentication/authorization
+- Seed data script
+- Unit and e2e tests
 
 ## License
 
