@@ -26,7 +26,7 @@ export class Player {
   @Prop()
   imageUrl: string;
 
-  @Prop()
+  @Prop({ type: Object })
   stats: {
     matches?: number;
     goals?: number;
