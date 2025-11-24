@@ -15,7 +15,7 @@ export class Player {
   name: string;
 
   @Prop({ required: true })
-  position: string;
+  position: string; // Comma-separated values: Goal Keeper,Forward,Midfielder,Defender
 
   @Prop({ required: true })
   basePrice: number;
@@ -25,6 +25,9 @@ export class Player {
 
   @Prop({ type: String, ref: 'Team', default: null })
   boughtBy: string;
+
+  @Prop({ required: false })
+  image?: string;
 
   @Prop({
     type: String,

@@ -27,7 +27,15 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  const host = process.env.HOST || '0.0.0.0'; // Bind to all interfaces on Windows
+  
+  try {
+    await app.listen(port, host);
+    console.log(`Application is running on: http://localhost:${port}`);
+    console.log(`Server is listening on: ${host}:${port}`);
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 bootstrap();

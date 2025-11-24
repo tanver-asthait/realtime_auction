@@ -35,40 +35,50 @@ async function seed() {
     console.log('\nCreating 28 players...');
 
     // Create 28 players with different positions and base prices
+    // Using small base64 placeholder images (1x1 pixel colored squares for demo)
+    const playerImages = {
+      goalkeeper: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/58BAgjgAeKoqKgAAAAASUVORK5CYII=', // Yellow
+      defender: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9hpuSeQAAAABJRU5ErkJggg==', // Blue
+      midfielder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // Green
+      forward: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP4P50BAgjgAeKoqKgAAAAASUVORK5CYII=' // Red
+    };
+
     const playerData = [
-      // Batsmen (10 players)
-      { name: 'Virat Kohli', position: 'Batsman', basePrice: 15 },
-      { name: 'Rohit Sharma', position: 'Batsman', basePrice: 14 },
-      { name: 'KL Rahul', position: 'Batsman', basePrice: 12 },
-      { name: 'David Warner', position: 'Batsman', basePrice: 11 },
-      { name: 'Steve Smith', position: 'Batsman', basePrice: 10 },
-      { name: 'AB de Villiers', position: 'Batsman', basePrice: 13 },
-      { name: 'Jos Buttler', position: 'Batsman', basePrice: 9 },
-      { name: 'Quinton de Kock', position: 'Batsman', basePrice: 8 },
-      { name: 'Shikhar Dhawan', position: 'Batsman', basePrice: 7 },
-      { name: 'Faf du Plessis', position: 'Batsman', basePrice: 6 },
+      // Goal Keepers (3 players)
+      { name: 'Manuel Neuer', position: 'Goal Keeper', basePrice: 8, image: playerImages.goalkeeper },
+      { name: 'Alisson Becker', position: 'Goal Keeper', basePrice: 7, image: playerImages.goalkeeper },
+      { name: 'Jan Oblak', position: 'Goal Keeper', basePrice: 6, image: playerImages.goalkeeper },
 
-      // All-rounders (8 players)
-      { name: 'Hardik Pandya', position: 'All-rounder', basePrice: 12 },
-      { name: 'Ben Stokes', position: 'All-rounder', basePrice: 11 },
-      { name: 'Andre Russell', position: 'All-rounder', basePrice: 10 },
-      { name: 'Ravindra Jadeja', position: 'All-rounder', basePrice: 9 },
-      { name: 'Glenn Maxwell', position: 'All-rounder', basePrice: 8 },
-      { name: 'Shakib Al Hasan', position: 'All-rounder', basePrice: 7 },
-      { name: 'Moeen Ali', position: 'All-rounder', basePrice: 6 },
-      { name: 'Marcus Stoinis', position: 'All-rounder', basePrice: 5 },
+      // Defenders (8 players)
+      { name: 'Virgil van Dijk', position: 'Defender', basePrice: 12, image: playerImages.defender },
+      { name: 'Sergio Ramos', position: 'Defender', basePrice: 10, image: playerImages.defender },
+      { name: 'Kalidou Koulibaly', position: 'Defender', basePrice: 9, image: playerImages.defender },
+      { name: 'Andrew Robertson', position: 'Defender', basePrice: 8, image: playerImages.defender },
+      { name: 'Trent Alexander-Arnold', position: 'Defender', basePrice: 8, image: playerImages.defender },
+      { name: 'Raphael Varane', position: 'Defender', basePrice: 7, image: playerImages.defender },
+      { name: 'Giorgio Chiellini', position: 'Defender', basePrice: 6, image: playerImages.defender },
+      { name: 'Thiago Silva', position: 'Defender', basePrice: 5, image: playerImages.defender },
 
-      // Bowlers (10 players)
-      { name: 'Jasprit Bumrah', position: 'Bowler', basePrice: 12 },
-      { name: 'Rashid Khan', position: 'Bowler', basePrice: 11 },
-      { name: 'Kagiso Rabada', position: 'Bowler', basePrice: 10 },
-      { name: 'Pat Cummins', position: 'Bowler', basePrice: 9 },
-      { name: 'Trent Boult', position: 'Bowler', basePrice: 8 },
-      { name: 'Yuzvendra Chahal', position: 'Bowler', basePrice: 7 },
-      { name: 'Mohammed Shami', position: 'Bowler', basePrice: 6 },
-      { name: 'Bhuvneshwar Kumar', position: 'Bowler', basePrice: 5 },
-      { name: 'Sunil Narine', position: 'Bowler', basePrice: 4 },
-      { name: 'Kuldeep Yadav', position: 'Bowler', basePrice: 3 },
+      // Midfielders (9 players)
+      { name: 'Kevin De Bruyne', position: 'Midfielder', basePrice: 15, image: playerImages.midfielder },
+      { name: 'Luka Modrić', position: 'Midfielder', basePrice: 12, image: playerImages.midfielder },
+      { name: 'Kanté', position: 'Midfielder', basePrice: 11, image: playerImages.midfielder },
+      { name: 'Joshua Kimmich', position: 'Midfielder', basePrice: 10, image: playerImages.midfielder },
+      { name: 'Bruno Fernandes', position: 'Midfielder', basePrice: 9, image: playerImages.midfielder },
+      { name: 'Jordan Henderson', position: 'Midfielder', basePrice: 7, image: playerImages.midfielder },
+      { name: 'Casemiro', position: 'Midfielder', basePrice: 6, image: playerImages.midfielder },
+      { name: 'Paul Pogba', position: 'Midfielder', basePrice: 5, image: playerImages.midfielder },
+      { name: 'Frenkie de Jong', position: 'Midfielder', basePrice: 4, image: playerImages.midfielder },
+
+      // Forwards (8 players)
+      { name: 'Lionel Messi', position: 'Forward', basePrice: 20, image: playerImages.forward },
+      { name: 'Cristiano Ronaldo', position: 'Forward', basePrice: 18, image: playerImages.forward },
+      { name: 'Kylian Mbappé', position: 'Forward', basePrice: 16, image: playerImages.forward },
+      { name: 'Erling Haaland', position: 'Forward', basePrice: 14, image: playerImages.forward },
+      { name: 'Robert Lewandowski', position: 'Forward', basePrice: 13, image: playerImages.forward },
+      { name: 'Mohamed Salah', position: 'Forward', basePrice: 12, image: playerImages.forward },
+      { name: 'Sadio Mané', position: 'Forward', basePrice: 10, image: playerImages.forward },
+      { name: 'Harry Kane', position: 'Forward', basePrice: 9, image: playerImages.forward },
     ];
 
     for (const player of playerData) {
@@ -76,6 +86,7 @@ async function seed() {
         name: player.name,
         position: player.position,
         basePrice: player.basePrice,
+        image: player.image,
       });
       console.log(
         `✅ Created player: ${createdPlayer.name} (${createdPlayer.position}) - Base Price: ${createdPlayer.basePrice}`,
