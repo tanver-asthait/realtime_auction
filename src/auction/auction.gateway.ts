@@ -265,6 +265,37 @@ export class AuctionGateway
     }
   }
 
+  /**
+   * Handle request for current auction state
+   */
+  @SubscribeMessage('requestState')
+  async handleRequestState(
+    @MessageBody() payload: any,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.logger.log(`State request from client: ${client.id}`);
+
+    try {
+      await this.sendCurrentStateToClient(client);
+      
+      return {
+        event: 'stateRequested',
+        data: {
+          success: true,
+        },
+      };
+    } catch (error) {
+      this.logger.error(`Error sending state to client: ${error.message}`);
+      return {
+        event: 'stateRequestError',
+        data: {
+          success: false,
+          error: error.message,
+        },
+      };
+    }
+  }
+
   // ==================== BROADCAST METHODS ====================
 
   /**
