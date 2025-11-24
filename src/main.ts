@@ -19,8 +19,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:4200', // Angular dev server
       'http://localhost:3000', // Alternative frontend
-      process.env.FRONTEND_URL, // Production frontend URL
-      'https://your-frontend-app.onrender.com', // Replace with actual Render frontend URL
+      'https://auction-frontend-j77n.onrender.com', // Production frontend URL
+      process.env.FRONTEND_URL, // Additional frontend URL from environment variable
     ].filter(Boolean),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   const host = process.env.HOST || '0.0.0.0'; // Bind to all interfaces on Windows
-  
+
   try {
     await app.listen(port, host);
     console.log(`Application is running on: http://localhost:${port}`);
