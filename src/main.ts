@@ -19,7 +19,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:4200', // Angular dev server
       'http://localhost:3000', // Alternative frontend
-      process.env.FRONTEND_URL,
+      process.env.FRONTEND_URL, // Production frontend URL
+      'https://your-frontend-app.onrender.com', // Replace with actual Render frontend URL
     ].filter(Boolean),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
