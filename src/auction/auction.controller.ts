@@ -38,6 +38,11 @@ export class AuctionController {
     return this.auctionService.getAuctionStatus();
   }
 
+  @Get('bid-increment')
+  async getBidIncrement() {
+    return { bidIncrement: this.auctionService.getBidIncrement() };
+  }
+
   @Post('reset')
   @HttpCode(HttpStatus.OK)
   async resetAuction() {

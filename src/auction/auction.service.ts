@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 import { AuctionState, AuctionStateDocument } from './auction-state.schema';
 import { PlayersService } from '../players/players.service';
 import { TeamsService } from '../teams/teams.service';
@@ -20,6 +21,7 @@ export class AuctionService {
     private auctionStateModel: Model<AuctionStateDocument>,
     private playersService: PlayersService,
     private teamsService: TeamsService,
+    private configService: ConfigService,
   ) {}
 
   /**
@@ -27,6 +29,13 @@ export class AuctionService {
    */
   setGateway(gateway: any) {
     this.gateway = gateway;
+  }
+
+  /**
+   * Get current bid increment from configuration
+   */
+  getBidIncrement(): number {
+    return parseInt(this.configService.get<string>('BID_INCREMENT', '1'));
   }
 
   /**
@@ -109,7 +118,7 @@ export class AuctionService {
    * - Auction must be running
    * - Player must be in AUCTIONING status
    * - Team budget >= new bid amount
-   * - New bid must be exactly +1 from current highest
+   * - New bid must be a multiple of BID_INCREMENT from current highest
    */
   async validateBid(
     teamId: string,
@@ -135,12 +144,22 @@ export class AuctionService {
         return { valid: false, error: 'Player is not in AUCTIONING status' };
       }
 
-      // Check bid increment rule: must be exactly +1
-      const expectedBid = auctionState.highestBid + 1;
-      if (bidAmount !== expectedBid) {
+      // Get configurable bid increment
+      const bidIncrement = parseInt(this.configService.get<string>('BID_INCREMENT', '1'));
+      
+      // Check bid increment rule: must be a multiple of BID_INCREMENT
+      const bidDifference = bidAmount - auctionState.highestBid;
+      if (bidDifference <= 0) {
         return {
           valid: false,
-          error: `Bid must be exactly ${expectedBid} (current: ${auctionState.highestBid} + 1)`,
+          error: `Bid must be higher than current highest bid of $${auctionState.highestBid}`,
+        };
+      }
+      
+      if (bidDifference % bidIncrement !== 0) {
+        return {
+          valid: false,
+          error: `Bid increment must be in multiples of $${bidIncrement}. Minimum bid: $${auctionState.highestBid + bidIncrement}`,
         };
       }
 
@@ -163,7 +182,7 @@ export class AuctionService {
    * Place a bid
    * Rules:
    * - Must pass validation
-   * - Increment is always +1
+   * - Increment must be a multiple of BID_INCREMENT
    * - Timer resets to 60 seconds (1 minute)
    */
   async placeBid(
