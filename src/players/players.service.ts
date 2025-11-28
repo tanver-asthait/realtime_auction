@@ -49,6 +49,10 @@ export class PlayersService {
     return this.playerModel.find({ status }).exec();
   }
 
+  async findByTeam(teamId: string): Promise<Player[]> {
+    return this.playerModel.find({ boughtBy: teamId }).exec();
+  }
+
   async findNextUnsold(): Promise<PlayerDocument | null> {
     // Find the first player with status PENDING (unsold)
     return this.playerModel.findOne({ status: PlayerStatus.PENDING }).exec();
@@ -92,5 +96,23 @@ export class PlayersService {
       throw new NotFoundException(`Player with ID ${playerId} not found`);
     }
     return player;
+  }
+
+  async resetAllPlayersToPending(): Promise<{ message: string; updatedCount: number }> {
+    const result = await this.playerModel
+      .updateMany(
+        {}, // Update all players
+        {
+          boughtBy: null,
+          finalPrice: null,
+          status: PlayerStatus.PENDING,
+        }
+      )
+      .exec();
+    
+    return {
+      message: `Successfully reset ${result.modifiedCount} players to pending status`,
+      updatedCount: result.modifiedCount,
+    };
   }
 }

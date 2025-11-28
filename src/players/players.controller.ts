@@ -52,4 +52,17 @@ export class PlayersController {
   async findByStatus(@Param('status') status: PlayerStatus) {
     return this.playersService.findByStatus(status);
   }
+
+  @Get('team/:teamId')
+  async findByTeam(@Param('teamId') teamId: string) {
+    console.log(`Fetching players for team ID: ${teamId}`);
+    return this.playersService.findByTeam(teamId);
+  }
+
+  @Post('actions/reset-all')
+  @HttpCode(HttpStatus.OK)
+  async resetAllPlayersToPending() {
+    console.log('Resetting all players to PENDING status');
+    return this.playersService.resetAllPlayersToPending();
+  }
 }
