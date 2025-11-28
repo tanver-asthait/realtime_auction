@@ -11,6 +11,8 @@ import { AuctionModule } from './auction/auction.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
     }),
     MongooseModule.forRoot(
       process.env.MONGODB_URI || 'mongodb://localhost:27017/auction',

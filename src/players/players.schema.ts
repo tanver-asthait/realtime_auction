@@ -3,35 +3,38 @@ import { Document } from 'mongoose';
 
 export type PlayerDocument = Player & Document;
 
+export enum PlayerStatus {
+  PENDING = 'pending',
+  AUCTIONING = 'auctioning',
+  SOLD = 'sold',
+}
+
 @Schema({ timestamps: true })
 export class Player {
   @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
-  position: string;
+  position: string; // Comma-separated values: Goal Keeper,Forward,Midfielder,Defender
 
   @Prop({ required: true })
   basePrice: number;
 
   @Prop({ default: null })
-  soldPrice: number;
+  finalPrice: number;
 
   @Prop({ type: String, ref: 'Team', default: null })
-  teamId: string;
+  boughtBy: string;
 
-  @Prop({ default: 'unsold' })
-  status: string; // 'unsold', 'sold', 'in-auction'
+  @Prop({ required: false })
+  image?: string;
 
-  @Prop()
-  imageUrl: string;
-
-  @Prop({ type: Object })
-  stats: {
-    matches?: number;
-    goals?: number;
-    assists?: number;
-  };
+  @Prop({
+    type: String,
+    enum: Object.values(PlayerStatus),
+    default: PlayerStatus.PENDING,
+  })
+  status: PlayerStatus;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
