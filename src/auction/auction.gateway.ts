@@ -31,6 +31,11 @@ interface SellPlayerPayload {
   playerId?: string;
 }
 
+interface ReactionPayload {
+  emoji: string;
+  senderName?: string;
+}
+
 @WebSocketGateway({
   cors: {
     origin: [
@@ -120,6 +125,24 @@ export class AuctionGateway
         },
       };
     }
+  }
+
+  /**
+   * Handle emoji reactions from any client
+   * Payload: { emoji, senderName }
+   */
+  @SubscribeMessage('sendReaction')
+  handleReaction(
+    @MessageBody() payload: ReactionPayload,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.logger.log(`Reaction received: ${JSON.stringify(payload)}`);
+    const id = Math.random().toString(36).substring(2, 9);
+    this.server.emit('reaction', {
+      ...payload,
+      id,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   // ==================== ADMIN EVENTS ====================
