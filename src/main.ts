@@ -1,9 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Set request payload size limits to 500kb (allows for larger player images)
+  app.use(json({ limit: '500kb' }));
+  app.use(urlencoded({ limit: '500kb', extended: true }));
 
   // Enable global validation
   app.useGlobalPipes(
